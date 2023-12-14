@@ -71,12 +71,16 @@ if __name__ == "__main__":
 
     state = finder.find(source_dir, codebase, configuration)
 
-    exporter = Exporter(codebase)
+    exporter = Exporter(codebase, hash_filenames=False)
     exports = exporter.walk(state)
     for p in codebase["platforms"]:
         covarray = []
         for filename in exports[p]:
-            covobject = {"file": filename, "regions": []}
+            covobject = {
+                "file": util.compute_file_hash(filename),
+                "path": filename,
+                "regions": [],
+            }
             for region in exports[p][filename]:
                 covobject["regions"].append(list(region))
             covarray.append(covobject)

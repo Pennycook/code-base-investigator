@@ -17,19 +17,21 @@ class Exporter(TreeWalker):
     Build a per-platform list of mappings.
     """
 
-    def __init__(self, codebase):
+    def __init__(self, codebase, *, hash_filenames=True):
         super().__init__(None, None)
         self.codebase = codebase
         self.exports = None
+        self.hash_filenames = hash_filenames
 
     def walk(self, state):
         self.exports = collections.defaultdict(
             lambda: collections.defaultdict(list),
         )
         for fn in state.get_filenames():
-            hashed_fn = util.compute_file_hash(fn)
+            if self.hash_filenames:
+                fn = util.compute_file_hash(fn)
             self._export_node(
-                hashed_fn,
+                fn,
                 state.get_tree(fn).root,
                 state.get_map(fn),
             )
@@ -56,6 +58,6 @@ class Exporter(TreeWalker):
 
         next_filename = _filename
         if isinstance(_node, FileNode):
-            next_filename = util.compute_file_hash(_node.filename)
+            next_filename = _node.filename
         for child in _node.children:
             self._export_node(next_filename, child, _map)
