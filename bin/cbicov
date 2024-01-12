@@ -22,6 +22,14 @@ if __name__ == "__main__":
     desc = "Code Base Investigator Coverage Tool"
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
+        "-S",
+        "--source-dir",
+        metavar="<path>",
+        dest="source_dir",
+        help="path to source directory",
+        default=os.getcwd(),
+    )
+    parser.add_argument(
         "ifile",
         metavar="<input path>",
         help="path to compilation database JSON file",
@@ -41,6 +49,8 @@ if __name__ == "__main__":
         if not util.ensure_ext(path, [".json"]):
             raise ValueError(f"{path} is not a JSON file.")
 
+    source_dir = os.path.realpath(args.source_dir)
+
     # Ensure regular CBI output goes to stderr
     stderr_log = logging.StreamHandler(sys.stderr)
     stderr_log.setFormatter(logging.Formatter("[%(levelname)-8s] %(message)s"))
@@ -50,12 +60,17 @@ if __name__ == "__main__":
     # Run CBI configured as-if:
     # - configuration contains a single (dummy) platform
     # - codebase contains all files in the specified compilation database
-    db = config.load_database(dbpath, os.getcwd())
+    db = config.load_database(dbpath, source_dir)
     configuration = {"cli": db}
     files = [e["file"] for e in db]
-    codebase = {"files": files, "platforms": ["cli"], "exclude_files": []}
+    codebase = {
+        "files": files,
+        "platforms": ["cli"],
+        "exclude_files": [],
+        "rootdir": source_dir,
+    }
 
-    state = finder.find(os.getcwd(), codebase, configuration)
+    state = finder.find(source_dir, codebase, configuration)
 
     exporter = Exporter(codebase)
     exports = exporter.walk(state)
