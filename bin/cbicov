@@ -62,9 +62,8 @@ if __name__ == "__main__":
     # - codebase contains all files in the specified compilation database
     db = config.load_database(dbpath, source_dir)
     configuration = {"cli": db}
-    files = [e["file"] for e in db]
     codebase = {
-        "files": files,
+        "files": [],
         "platforms": ["cli"],
         "exclude_files": [],
         "rootdir": source_dir,
