@@ -23,12 +23,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument(
         "ifile",
-        metavar="INPUT",
+        metavar="<input path>",
         help="path to compilation database JSON file",
     )
     parser.add_argument(
         "ofile",
-        metavar="OUTPUT",
+        metavar="<output path>",
         help="path to coverage JSON file",
     )
     args = parser.parse_args()
