@@ -66,23 +66,25 @@ if __name__ == "__main__":
         "files": [],
         "platforms": ["cli"],
         "exclude_files": [],
+        "exclude_patterns": [],
         "rootdir": source_dir,
     }
 
     state = finder.find(source_dir, codebase, configuration)
 
-    exporter = Exporter(codebase, hash_filenames=False)
+    exporter = Exporter(codebase, hash_filenames=False, export_regions=False)
     exports = exporter.walk(state)
     for p in codebase["platforms"]:
         covarray = []
         for filename in exports[p]:
+            relative_path = os.path.relpath(filename, start=source_dir)
             covobject = {
-                "file": util.compute_file_hash(filename),
-                "path": filename,
-                "regions": [],
+                "file": relative_path,
+                "id": util.compute_file_hash(filename),
+                "lines": [],
             }
-            for region in exports[p][filename]:
-                covobject["regions"].append(list(region))
+            for lines in exports[p][filename]:
+                covobject["lines"].append(lines)
             covarray.append(covobject)
         util._validate_json(covarray, "coverage")
         json_string = json.dumps(covarray)
