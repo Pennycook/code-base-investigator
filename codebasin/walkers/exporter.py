@@ -17,11 +17,12 @@ class Exporter(TreeWalker):
     Build a per-platform list of mappings.
     """
 
-    def __init__(self, codebase, *, hash_filenames=True):
+    def __init__(self, codebase, *, hash_filenames=True, export_regions=True):
         super().__init__(None, None)
         self.codebase = codebase
         self.exports = None
         self.hash_filenames = hash_filenames
+        self.export_regions = export_regions
 
     def walk(self, state):
         self.exports = collections.defaultdict(
@@ -49,12 +50,17 @@ class Exporter(TreeWalker):
         if isinstance(_node, CodeNode):
             association = _map[_node]
             for p in frozenset(association):
-                start_line = _node.start_line
-                end_line = _node.end_line
-                num_lines = _node.num_lines
-                self.exports[p][_filename].append(
-                    (start_line, end_line, num_lines),
-                )
+                if self.export_regions:
+                    start_line = _node.start_line
+                    end_line = _node.end_line
+                    num_lines = _node.num_lines
+                    self.exports[p][_filename].append(
+                        (start_line, end_line, num_lines),
+                    )
+                else:
+                    lines = _node.lines
+                    print(_node.lines)
+                    self.exports[p][_filename].append(lines)
 
         next_filename = _filename
         if isinstance(_node, FileNode):

@@ -83,8 +83,10 @@ if __name__ == "__main__":
                 "id": util.compute_file_hash(filename),
                 "lines": [],
             }
+            # This initial implementation makes no attempt to compress
+            # consecutive lines, even though this is permitted.
             for lines in exports[p][filename]:
-                covobject["lines"].append(lines)
+                covobject["lines"].extend(lines)
             covarray.append(covobject)
         util._validate_json(covarray, "coverage")
         json_string = json.dumps(covarray)
