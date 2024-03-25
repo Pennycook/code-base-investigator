@@ -59,7 +59,6 @@ class Exporter(TreeWalker):
                     )
                 else:
                     lines = _node.lines
-                    print(_node.lines)
                     self.exports[p][_filename].append(lines)
 
         next_filename = _filename
