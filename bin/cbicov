@@ -30,6 +30,16 @@ if __name__ == "__main__":
         default=os.getcwd(),
     )
     parser.add_argument(
+        "-x",
+        "--exclude",
+        dest="excludes",
+        metavar="<pattern>",
+        action="append",
+        default=[],
+        help="Exclude files matching this pattern from the code base. "
+        + "May be specified multiple times.",
+    )
+    parser.add_argument(
         "ifile",
         metavar="<input path>",
         help="path to compilation database JSON file",
@@ -66,7 +76,7 @@ if __name__ == "__main__":
         "files": [],
         "platforms": ["cli"],
         "exclude_files": [],
-        "exclude_patterns": [],
+        "exclude_patterns": args.excludes,
         "rootdir": source_dir,
     }
 
